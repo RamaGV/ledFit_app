@@ -1,17 +1,21 @@
+import { Color, FontSize, FontFamily, Gap, Padding } from "../../GlobalStyles";
+import { useRouter } from "expo-router";
 import React from "react";
+import Logo from "./Logo";
 import {
   View,
   Text,
   Image,
   StyleSheet,
   ImageSourcePropType,
+  Pressable,
 } from "react-native";
-import Logo from "./Logo";
-import { Color, FontSize, FontFamily, Gap, Padding } from "../../GlobalStyles";
 
 export type TopNavbarType = {
+  title?: string;
   iconlyLightOutlineArrowLeft?: ImageSourcePropType;
   iconlyCurvedPlus?: ImageSourcePropType;
+  iconlyLightSearch?: ImageSourcePropType;
   iconlyCurvedNotification?: ImageSourcePropType;
   iconlyCurvedBookmark?: ImageSourcePropType;
   showTypeLogoDefaultComponent?: boolean;
@@ -27,6 +31,7 @@ export type TopNavbarType = {
 
 const TopNavbar = ({
   component = "Navbar",
+  title = "Ledfit",
   theme = "Dark",
   themeLightComponentNavbarAlignSelf,
   themeLightComponentNavbarWidth,
@@ -34,23 +39,36 @@ const TopNavbar = ({
   iconlyCurvedPlus,
   iconlyCurvedNotification,
   iconlyCurvedBookmark,
+  iconlyLightSearch,
   showTypeLogoDefaultComponent,
 }: TopNavbarType) => {
+  const router = useRouter();
+
   return (
     <View style={[styles.root, styles.autoFlexBox]}>
       <View style={[styles.autoLayoutHorizontal, styles.autoFlexBox]}>
         <Logo />
-        <Text style={styles.title}>Ledfit</Text>
+        <Text style={styles.title}>{title}</Text>
       </View>
       <View style={[styles.autoLayoutHorizontal1, styles.autoFlexBox]}>
-        <Image
-          style={styles.iconlycurvedplusLayout}
-          source={iconlyCurvedNotification}
-        />
+        <Pressable onPress={() => router.push("/notifications")}>
+          <Image
+            style={styles.iconlycurvedplusLayout}
+            source={iconlyCurvedNotification}
+          />
+        </Pressable>
         <Image
           style={styles.iconlycurvedplusLayout}
           source={iconlyCurvedBookmark}
         />
+        {iconlyLightSearch && (
+          <Pressable>
+            <Image
+              style={styles.iconlycurvedplusLayout}
+              source={iconlyLightSearch}
+            />
+          </Pressable>
+        )}
       </View>
     </View>
   );

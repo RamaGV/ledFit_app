@@ -27,7 +27,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore" // Corresponde a app/(tabs)/explore.tsx
+        name="entrenar" // Corresponde a app/(tabs)/entrenar.tsx
         options={{
           title: "Entrenar",
           tabBarIcon: ({ color }) => (
@@ -35,7 +35,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* Agrega más Tabs.Screen si lo requieres */}
       <Tabs.Screen
         name="profile" // Corresponde a app/(tabs)/explore.tsx
         options={{
