@@ -6,20 +6,26 @@ import {
   Pressable,
   ActivityIndicator,
 } from "react-native";
-import { WorkoutsContext } from "../context/WorkoutsContext";
-import { ImagesMapContext } from "../context/ImagesMapContext";
 import WorkoutCardGrande from "../components/WorkoutCardGrande";
-import WorkoutCardChica from "../components/WorkoutCardChica";
+import { ImagesMapContext } from "../context/ImagesMapContext";
+import { WorkoutsContext } from "../context/WorkoutsContext";
+import { UsersContext } from "../context/UsersContext";
+import WorkoutCard from "../components/WorkoutCard";
 import TopNavbar from "../components/TopNavbar";
 import { router } from "expo-router";
+import { useState } from "react";
 
 const defaultImage = require("../../assets/defaultWorkout.png");
 
 export default function HomeScreen() {
-  const { workouts, loading, error } = React.useContext(WorkoutsContext);
+  const levels = ["Principiante", "Intermedio", "Avanzado"];
+  const [selectedLevel, setSelectedLevel] = useState("Intermedio");
   const { imagesMap } = React.useContext(ImagesMapContext);
+  const { user } = React.useContext(UsersContext);
+  const { workouts, loadWorkouts, errorWorkouts } =
+    React.useContext(WorkoutsContext);
 
-  if (loading) {
+  if (loadWorkouts) {
     return (
       <View className="flex-1 bg-[#121212]">
         <ActivityIndicator color="#7B61FF" size="large" />
@@ -27,16 +33,14 @@ export default function HomeScreen() {
     );
   }
 
-  if (error) {
+  if (errorWorkouts) {
     return (
       <View className="flex-1 bg-[#121212]">
         <Text>Error</Text>
       </View>
     );
   }
-  // Dividimos los workouts en destacados (por ejemplo, 2 primeros) y otros.
-  const featuredWorkouts = workouts.slice(0, 2);
-  const otherWorkouts = workouts.slice(2);
+  const featuredWorkouts = workouts.slice(0, 4);
 
   return (
     <View className="flex-1 bg-[#121212] px-4">
@@ -47,15 +51,19 @@ export default function HomeScreen() {
         iconlyCurvedBookmark={require("../../assets/iconlycurvedbookmark.png")}
       />
       <Text className="text-white text-2xl font-semibold mb-3">
-        Hola, Christina 👋
+        Hola, {user.tag} 👋
       </Text>
 
       <View className="flex-row items-center justify-between">
         <Text className="text-white text-lg font-semibold">
           Mis entrenamientos
         </Text>
-        <Pressable>
-          <Text className="text-[#7B61FF] text-sm">Ver todos</Text>
+        <Pressable
+          onPress={() => {
+            router.push(`/(entrenar)/mis-entrenamientos`);
+          }}
+        >
+          <Text className="text-[#7B61FF] text-sm">Ver más</Text>
         </Pressable>
       </View>
 
@@ -63,57 +71,76 @@ export default function HomeScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {featuredWorkouts.map((item, idx) => (
             <View key={item._id || idx} className="m-3">
-              <WorkoutCardGrande
-                key={item._id || idx}
-                title={item.title}
-                tiempo={item.totalTime}
-                nivel={item.level}
-                imagen={imagesMap[item.image] || defaultImage}
-                component="Card Grande"
-              />
-            </View>
-          ))}
-        </ScrollView>
-      </View>
-
-      <View className="flex-row items-center justify-between my-2">
-        <Text className="text-white text-lg font-semibold">Workout Levels</Text>
-        <Pressable>
-          <Text className="text-[#7B61FF] text-sm">Ver todos</Text>
-        </Pressable>
-      </View>
-
-      <View className="flex-row justify-between mb-3">
-        <Pressable className="bg-[#1E1E1E] px-4 py-2 rounded-lg">
-          <Text className="text-white text-sm">Beginner</Text>
-        </Pressable>
-        <Pressable className="bg-[#7B61FF] px-4 py-2 rounded-lg">
-          <Text className="text-white text-sm">Intermediate</Text>
-        </Pressable>
-        <Pressable className="bg-[#1E1E1E] px-4 py-2 rounded-lg">
-          <Text className="text-white text-sm">Advanced</Text>
-        </Pressable>
-      </View>
-      <View className="flex-1 flex-col items-center justify-center">
-        <ScrollView>
-          {otherWorkouts.map((item, idx) => (
-            <View key={item._id || idx} className="m-4">
               <Pressable
                 key={item._id || idx}
                 onPress={() => {
                   router.push(`/(entrenar)/workout-details?id=${item._id}`);
                 }}
               >
-                <WorkoutCardChica
+                <WorkoutCardGrande
+                  key={item._id || idx}
                   title={item.title}
                   tiempo={item.totalTime}
                   nivel={item.level}
                   imagen={imagesMap[item.image] || defaultImage}
-                  component="Card Chica"
+                  component="Card Grande"
                 />
               </Pressable>
             </View>
           ))}
+        </ScrollView>
+      </View>
+
+      <View className="flex-row items-center justify-between my-2">
+        <Text className="text-white text-lg font-semibold">Niveles</Text>
+        <Pressable
+          onPress={() => {
+            router.push(`/entrenar`);
+          }}
+        >
+          <Text className="text-[#7B61FF] text-sm">Ver más</Text>
+        </Pressable>
+      </View>
+
+      <View className="flex-row mb-5">
+        {levels.map((level) => {
+          const isActive = level === selectedLevel;
+          return (
+            <Pressable
+              key={level}
+              onPress={() => setSelectedLevel(level)}
+              className={`px-4 py-2 rounded-full mr-3 ${
+                isActive ? "bg-[#7B61FF]" : "bg-[#1E1E1E]"
+              }`}
+            >
+              <Text className="text-white text-sm">{level}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      <View className="flex-1 flex-col items-center justify-center">
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {workouts
+            .filter((item) => item.level === selectedLevel)
+            .map((item, idx) => (
+              <Pressable
+                key={item._id || idx}
+                className="m-3"
+                onPress={() => {
+                  router.push(`/(entrenar)/workout-details?id=${item._id}`);
+                }}
+              >
+                <WorkoutCard
+                  title={item.title}
+                  totalTime={item.totalTime}
+                  level={item.level}
+                  imagen={imagesMap[item.image]}
+                  isBookmarked={item.isBookmarked}
+                  component="Card Chica"
+                />
+              </Pressable>
+            ))}
         </ScrollView>
       </View>
     </View>

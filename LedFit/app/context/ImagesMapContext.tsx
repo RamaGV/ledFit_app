@@ -19,18 +19,28 @@ export function ImagesMapProvider({ children }: { children: React.ReactNode }) {
       functionalStrengthImage: require("../../assets/functionalStrengthImage.png"),
       hathaYogaImage: require("../../assets/hathaYogaImage.png"),
       potenciaEnCadenaImage: require("../../assets/potenciaEnCadenaImage.png"),
-      amrapImage: require("../../assets/AMRAPImage.png"),
+      amrapImage: require("../../assets/amrapImage.png"),
       tabataImage: require("../../assets/tabataImage.png"),
       sinDescansoImage: require("../../assets/sinDescansoImage.png"),
       fundamentosImage: require("../../assets/fundamentosImage.png"),
-      // Ejercicios individuales:
-      pushup: require("../../assets/exercises/warrior-1.png"),
+
+      // Ejercicios individuales
+      warrior1: require("../../assets/exercises/warrior1.png"),
       rest: require("../../assets/exercises/rest.png"),
-      pullup: require("../../assets/exercises/side-plank.png"),
-      kettlebellSwing: require("../../assets/exercises/one-leg-down.png"),
-      squatJump: require("../../assets/exercises/half-moon-pose.png"),
-      mountainClimbers: require("../../assets/exercises/triangle-pose.png"),
-      plankHold: require("../../assets/exercises/wheel-pose.png"),
+      sidePlank: require("../../assets/exercises/sidePlank.png"),
+      oneLegDown: require("../../assets/exercises/oneLegDown.png"),
+      halfMoonPose: require("../../assets/exercises/halfMoonPose.png"),
+      trianglePose: require("../../assets/exercises/trianglePose.png"),
+      wheelPose: require("../../assets/exercises/wheelPose.png"),
+      camelPose: require("../../assets/exercises/camelPose.png"),
+      oneLegUp: require("../../assets/exercises/oneLegUp.png"),
+      oneLegHead: require("../../assets/exercises/oneLegHead.png"),
+      strokePose: require("../../assets/exercises/strokePose.png"),
+
+      // Iconos de notificaciones
+      notificationTick: require("../../assets/icons/notificationTick.png"),
+      notificationPlus: require("../../assets/icons/notificationPlus.png"),
+      notificationTime: require("../../assets/icons/notificationTime.png"),
     };
     setImagesMap(imagesMap);
   }, []);
@@ -41,3 +51,5 @@ export function ImagesMapProvider({ children }: { children: React.ReactNode }) {
     </ImagesMapContext.Provider>
   );
 }
+
+export default ImagesMapContext;

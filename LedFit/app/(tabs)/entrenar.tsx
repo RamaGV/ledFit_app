@@ -11,16 +11,16 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import WorkoutCardChica from "../components/WorkoutCardChica";
+import WorkoutCard from "../components/WorkoutCard";
 
 export default function EntrenarScreen() {
   const [selectedLevel, setSelectedLevel] = useState("Intermedio");
   const { imagesMap } = useContext(ImagesMapContext);
-  const { workouts, loading, error } = useContext(WorkoutsContext);
+  const { workouts, loadWorkouts, errorWorkouts } = useContext(WorkoutsContext);
   const router = useRouter(); // Importa y usa el router
 
-  if (loading) return <ActivityIndicator />;
-  if (error) return <Text>Error: {error}</Text>;
+  if (loadWorkouts) return <ActivityIndicator />;
+  if (errorWorkouts) return <Text>Error: {errorWorkouts}</Text>;
 
   const levels = ["Principiante", "Intermedio", "Avanzado"];
 
@@ -52,21 +52,21 @@ export default function EntrenarScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {workouts
-          .filter((item) => item.level === selectedLevel.toLowerCase())
+          .filter((item) => item.level === selectedLevel)
           .map((item, idx) => (
             <Pressable
               key={item._id || idx}
               className="m-3"
               onPress={() => {
-                // Navegar a (entrenar)/workout-details con el id del workout
                 router.push(`/(entrenar)/workout-details?id=${item._id}`);
               }}
             >
-              <WorkoutCardChica
+              <WorkoutCard
                 title={item.title}
-                tiempo={item.totalTime}
-                nivel={item.level}
+                totalTime={item.totalTime}
+                level={item.level}
                 imagen={imagesMap[item.image]}
+                isBookmarked={item.isBookmarked}
                 component="Card Chica"
               />
             </Pressable>

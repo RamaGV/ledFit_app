@@ -1,64 +1,78 @@
 // app/notifications.tsx
-import React from "react";
-import { View, Text, ScrollView, Image, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, useRouter } from "expo-router";
+import { ImagesMapContext } from "./context/ImagesMapContext";
+import { useRouter } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { UsersContext } from "./context/UsersContext";
 
 export default function NotificationsScreen() {
-  // Datos de ejemplo
-  const notifications = [
-    {
-      date: "Today",
-      items: [
-        {
-          icon: require("../assets/icons/iconlyboldbookmark.png"),
-          title: "Congratulations!",
-          subtitle: "You've been exercising for 2 hours",
-          iconBg: "bg-green-500",
-        },
-        {
-          icon: require("../assets/icons/iconlyboldbookmark.png"),
-          title: "New Workout is Available!",
-          subtitle: "Check now and practice",
-          iconBg: "bg-blue-500",
-        },
-      ],
-    },
-    {
-      date: "Yesterday",
-      items: [
-        {
-          icon: require("../assets/icons/iconlyboldbookmark.png"),
-          title: "New Features are Available",
-          subtitle: "You can now set exercise reminder",
-          iconBg: "bg-red-500",
-        },
-      ],
-    },
-    {
-      date: "December 11, 2024",
-      items: [
-        {
-          icon: require("../assets/icons/iconlyboldbookmark.png"),
-          title: "Verification Successful",
-          subtitle: "Account verification complete",
-          iconBg: "bg-green-500",
-        },
-      ],
-    },
-  ];
-
+  const { user, loadUser: userLoading, errorUser } = useContext(UsersContext);
+  const { imagesMap } = useContext(ImagesMapContext);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    if (!userLoading && user) {
+      const fetchNotifications = async () => {
+        try {
+          setLoading(true);
+          const response = await fetch(
+            `http://192.168.1.3:5000/api/users/${user._id}/notifications`,
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch notifications");
+          }
+          const data = await response.json();
+          setNotifications(data);
+        } catch (err) {
+          console.error("Error fetching notifications:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchNotifications();
+    }
+  }, [user, userLoading]);
+
+  if (userLoading || loading) {
+    return (
+      <View className="flex-1 bg-[#121212] justify-center items-center">
+        <ActivityIndicator size="large" color="#FFFFFF" />
+      </View>
+    );
+  }
+
+  if (errorUser || !user) {
+    return (
+      <View className="flex-1 bg-[#121212] justify-center items-center">
+        <Text className="text-white text-center">
+          {errorUser || "User not authenticated"}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-[#121212] pt-10 px-4">
       {/* Header */}
       <View className="flex-row items-center justify-between mb-5">
         <Pressable onPress={() => router.back()}>
-          <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+          <Ionicons name="chevron-back" size={26} color="#FFFFFF" />
         </Pressable>
-        <Text className="text-white text-xl font-semibold">Notification</Text>
-        <Ionicons name="ellipsis-horizontal" size={24} color="#FFFFFF" />
+        <View className="flex-1 items-center">
+          <Text className="text-white text-xl font-semibold">
+            Notificaciones
+          </Text>
+        </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -67,7 +81,7 @@ export default function NotificationsScreen() {
             <Text className="text-white text-base font-semibold mb-3">
               {section.date}
             </Text>
-            {section.items.map((notif, nIdx) => (
+            {section.items.map((notif: any, nIdx: number) => (
               <View
                 key={nIdx}
                 className="flex-row items-center bg-[#1E1E1E] rounded-2xl p-4 mb-4"
@@ -76,8 +90,8 @@ export default function NotificationsScreen() {
                   className={`w-10 h-10 rounded-full justify-center items-center ${notif.iconBg} mr-3`}
                 >
                   <Image
-                    source={notif.icon}
-                    style={{ width: 20, height: 20 }}
+                    source={imagesMap[notif.icon]}
+                    style={{ width: 55, height: 55 }}
                     resizeMode="contain"
                   />
                 </View>

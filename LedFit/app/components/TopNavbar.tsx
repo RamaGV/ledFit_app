@@ -33,7 +33,7 @@ const TopNavbar = ({
   component = "Navbar",
   title = "Ledfit",
   theme = "Dark",
-  themeLightComponentNavbarAlignSelf,
+  themeLightComponentNavbarSelf,
   themeLightComponentNavbarWidth,
   iconlyLightOutlineArrowLeft,
   iconlyCurvedPlus,

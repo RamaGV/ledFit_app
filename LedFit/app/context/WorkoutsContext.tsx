@@ -8,7 +8,9 @@ interface Workout {
   rounds: Exercise[];
   image: string;
   totalTime: string;
-  // ... otros campos si los hay
+  group: string;
+  description: string;
+  isBookmarked: boolean;
 }
 interface Exercise {
   exerciseId: string;
@@ -18,40 +20,40 @@ interface Exercise {
 
 interface WorkoutsContextValue {
   workouts: Workout[];
-  loading: boolean;
+  loadWorkouts: boolean;
   rounds: Exercise[];
-  error: string | null;
+  errorWorkouts: string | null;
   reload: () => Promise<void>;
 }
 
 export const WorkoutsContext = createContext<WorkoutsContextValue>({
   workouts: [],
   rounds: [],
-  loading: true,
-  error: null,
+  loadWorkouts: true,
+  errorWorkouts: null,
   reload: async () => {},
 });
 
 export function WorkoutsProvider({ children }: { children: React.ReactNode }) {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loadWorkouts, setLoadingWorkout] = useState(true);
+  const [errorWorkouts, setErrorWorkouts] = useState<string | null>(null);
 
   const fetchWorkouts = useCallback(async () => {
     try {
-      setLoading(true);
+      setLoadingWorkout(true);
       const response = await fetch("http://192.168.1.3:5000/api/routines/all");
       if (!response.ok) {
-        throw new Error("Error fetching workouts");
+        throw new Error("ErrorWorkouts fetching workouts");
       }
       const data = await response.json();
       setWorkouts(data);
-      setError(null);
+      setErrorWorkouts(null);
     } catch (err: any) {
-      console.error("Error fetching workouts:", err);
-      setError("Failed to load workouts");
+      console.error("ErrorWorkouts fetching workouts:", err);
+      setErrorWorkouts("Failed to load workouts");
     } finally {
-      setLoading(false);
+      setLoadingWorkout(false);
     }
   }, []);
 
@@ -61,9 +63,18 @@ export function WorkoutsProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <WorkoutsContext.Provider
-      value={{ workouts, loading, error, reload: fetchWorkouts } as any}
+      value={
+        {
+          workouts,
+          loadWorkouts,
+          errorWorkouts,
+          reload: fetchWorkouts,
+        } as any
+      }
     >
       {children}
     </WorkoutsContext.Provider>
   );
 }
+
+export default WorkoutsProvider;

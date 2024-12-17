@@ -1,7 +1,11 @@
 // App.tsx
 import React from "react";
 import { ExpoRoot } from "expo-router";
-import { View, Text } from "react-native";
+import { NativeWindStyleSheet } from "nativewind";
+
+NativeWindStyleSheet.setOutput({
+  default: "native",
+});
 
 export default function App() {
   // Crea el contexto de la carpeta "app"
@@ -11,9 +15,6 @@ export default function App() {
   return (
     <>
       <ExpoRoot context={ctx} />
-      {/* <View className="p-4 bg-gray-950">
-        <Text>¡Hola, mundo!</Text>
-      </View> */}
     </>
   );
 }
